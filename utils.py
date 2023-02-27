@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import pandas as pd
 
 
 DATA_DIR = os.path.join(os.path.abspath('.'), '_dataset')
@@ -32,6 +33,26 @@ def save_data(file_path, data):
             json.dump(data, jf, indent='\t', ensure_ascii=False)
     elif ext == 'csv':
         data.to_csv(file_path, encoding='cp949', index=False)
+
+
+def load_data(file_path, encoding='utf-8'):
+    """확장자에 따라, file_path에 저장된 데이터 불러오기
+    """
+    if not os.path.isfile(file_path):
+        raise Exception(f'파일 없음: "{file_path}"')
+
+    ext = file_path.split('.')[-1]
+    if ext == 'json':
+        with open(file_path, 'r', encoding=encoding) as jf:
+            data = json.load(jf)
+    elif ext == 'csv':
+        data = pd.read_csv(file_path, encoding=encoding)
+    elif ext == 'txt':
+        with open(file_path, 'r', encoding=encoding) as f:
+            data = f.read()
+    elif ext == 'xlsx':
+        data = pd.read_excel(file_path)
+    return data
 
 
 def set_logger():
