@@ -24,15 +24,15 @@ def check_path(*paths):
     return full_path
 
 
-def save_data(file_path, data):
+def save_data(file_path, data, encoding='utf-8'):
     """확장자에 따라, data를 file_path에 저장하기
     """
     ext = file_path.split('.')[-1]
     if ext == 'json':
-        with open(file_path, 'w', encoding='utf-8') as jf:
+        with open(file_path, 'w', encoding=encoding) as jf:
             json.dump(data, jf, indent='\t', ensure_ascii=False)
     elif ext == 'csv':
-        data.to_csv(file_path, encoding='cp949', index=False)
+        data.to_csv(file_path, encoding=encoding, index=False)
 
 
 def load_data(file_path, encoding='utf-8'):

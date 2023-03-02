@@ -2,6 +2,8 @@ import os
 import time
 import glob
 import datetime
+import json
+import re
 import zipfile
 from io import BytesIO
 import requests as rq
@@ -30,21 +32,21 @@ def collect_living_population_dong():
                'Origin': 'https://data.seoul.go.kr',
                'Referer': 'https://data.seoul.go.kr/'}
 
-    # 코드 정보 다운로드
-    code_data = {'infId': 'DOWNLOAD',
-                 'infSeq': '4',
-                 'seq': '7'}
-    code_file = rq.post(url, code_data, headers=headers)
-    code_file = pd.read_excel(BytesIO(code_file.content))
-    save_path = utils.check_path('생활인구', '생활인구_행정동_코드_raw.csv')
-    utils.save_data(save_path, code_file)
+    # 행정동 코드 정보 다운로드
+    dongcode_data = {'infId': 'DOWNLOAD',
+                     'infSeq': '4',
+                     'seq': '7'}
+    dongcode_file = rq.post(url, dongcode_data, headers=headers)
+    dongcode_file = pd.read_excel(BytesIO(dongcode_file.content))
+    dongcode_save_path = utils.check_path('생활인구', '생활인구_행정동_코드_raw.csv')
+    utils.save_data(dongcode_save_path, dongcode_file, encoding='cp949')
     LOGGER.info('데이터 수집 완료 - 생활인구 행정동 코드 정보')
 
     # 생활인구 데이터 다운로드
+    lp_save_path = utils.check_path('생활인구')
     lp_data = {'infId': 'OA-14991',
                'seq': '2301',
                'infSeq': '3'}
-    lp_save_path = utils.check_path('생활인구')
     today = datetime.datetime.today()
     for x in range(5):
         new = today - datetime.timedelta(days=30*x)
@@ -66,9 +68,9 @@ def collect_living_population_dong():
             lp_file.extract(info, lp_save_path)
 
         if len(glob.glob(os.path.join(lp_save_path, '*.csv'))) == 2:
-            # 최근 1달 데이터만 다운로드
+            # 최근 1달 데이터만 다운로드 (행정동_코드.csv, lp_data.csv)
             break
-    LOGGER.info('데이터 수집 완료 - 생활인구 행정동 데이터')
+    LOGGER.info(f'데이터 수집 완료 - 생활인구 행정동 데이터 ({new})')
 
 
 def collect_living_migration_dong():
@@ -83,14 +85,14 @@ def collect_living_migration_dong():
                'Origin': 'https://data.seoul.go.kr',
                'Referer': 'https://data.seoul.go.kr/'}
 
-    # 코드 정보 다운로드
-    code_data = {'infId': 'DOWNLOAD',
-                 'infSeq': '4',
-                 'seq': '2'}
-    code_file = rq.post(url, code_data, headers=headers)
-    code_file = pd.read_excel(BytesIO(code_file.content))
-    save_path = utils.check_path('생활이동', '생활이동_행정동_코드_raw.csv')
-    utils.save_data(save_path, code_file)
+    # 행정동코드 정보 다운로드
+    dongcode_data = {'infId': 'DOWNLOAD',
+                     'infSeq': '4',
+                     'seq': '2'}
+    dongcode_file = rq.post(url, dongcode_data, headers=headers)
+    dongcode_file = pd.read_excel(BytesIO(dongcode_file.content))
+    dongcode_save_path = utils.check_path('생활이동', '생활이동_행정동_코드_raw.csv')
+    utils.save_data(dongcode_save_path, dongcode_file, encoding='cp949')
     LOGGER.info('데이터 수집 완료 - 생활이동 행정동 코드 정보')
 
     # 생활이동 데이터 다운로드
@@ -140,7 +142,7 @@ def collect_latest_dong_code():
     version = tr.find_elements(By.TAG_NAME, 'th')[0].get_attribute('innerText')
     version = version.replace('.', '-')
 
-    dong2code = {}
+    name2code = {}
     for i in tqdm(range(25)):  # 서울시 자치구 개수 = 25
         Select(browser.find_element(By.ID, 'strHighCategoryCode')).select_by_visible_text('서울특별시')
         time.sleep(1)
@@ -158,23 +160,46 @@ def collect_latest_dong_code():
             tds = row.find_elements(By.TAG_NAME, 'td')
             code = tds[1].get_attribute('innerText').strip()
             dong = tds[2].get_attribute('innerText').strip()
-            dong2code[f'서울 {gu} {dong}'] = code
+            name2code[f'서울 {gu} {dong}'] = code
     browser.close()
-    dong2code = dict(sorted(dong2code.items(), key=lambda x: x[0]))
+    name2code = dict(sorted(name2code.items(), key=lambda x: x[0]))
 
     # 데이터 저장
     save_path = utils.check_path('행정동',
                                  f'행정동_코드_v{version}.json')
-    utils.save_data(save_path, dong2code)
+    utils.save_data(save_path, name2code)
     LOGGER.info(f'데이터 수집 완료 - 최신 행정동 코드 데이터 (ver. {version})')
 
 
-# if __name__ == '__main__':
-    # # 생활인구 데이터
-    # collect_living_population_dong()
+def collect_dong_boundary():
+    """행정동 경계 데이터 수집하기
+    """
+    LOGGER.info('=============================================================')
+    LOGGER.info('데이터 수집 시작 - [ 행정동 경계 데이터 ]')
+    LOGGER.info('=============================================================')
 
-    # # 생활이동 데이터
-    # collect_living_migration_dong()
+    url = 'https://raw.githubusercontent.com/vuski/admdongkor/master/ver20230101/HangJeongDong_ver20230101.geojson'
+    response = rq.get(url)
+    response = response.text
+    data = json.loads(response)
+
+    version = re.search(r'(?<=ver)\d+', data['name']).group()
+    version = f'{version[:4]}-{version[4:6]}-{version[6:]}'
+
+    save_path = utils.check_path('행정동', f'행정동_경계_v{version}.json')
+    utils.save_data(save_path, data)
+    LOGGER.info(f'데이터 수집 완료 - 행정동 경계 데이터 (ver. {version})')
+
+
+if __name__ == '__main__':
+    # 생활인구 데이터
+    collect_living_population_dong()
+
+    # 생활이동 데이터
+    collect_living_migration_dong()
 
     # # 최신 행정동 코드 데이터
     # collect_latest_dong_code()
+
+    # # 행정동 경계 데이터
+    # collect_dong_boundary()
