@@ -1,0 +1,135 @@
+@import url('http://fonts.googleapis.com/earlyaccess/notosanskr.css');
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 30px 0 30px 0;
+}
+
+a {
+    color:#267CB9;
+    text-decoration:none;
+}
+  
+a:hover {
+    color:#069;
+    font-weight:bold;
+}
+
+iframe {
+    width: 100%;
+    height: 600px;
+}
+
+li {
+    margin: 3px 0 3px 0;
+}
+
+#icon {
+    text-align: right;
+}
+
+.fab {
+    font-size: 20px;
+}
+
+#out-container {
+    margin: 0 auto 0 auto;
+    padding: 0 0 0 0;
+}
+@media (min-width: 768px) {
+    #out-container {
+        width: 98%;
+    }
+}
+@media (min-width: 992px) {
+    #out-container {
+        width: 940px;
+    }
+}
+@media (min-width: 1200px) {
+    #out-container {
+        width: 1140px;
+    }
+}
+
+@media not print {
+    #out-container {
+        padding: 30px 50px 30px 50px;
+        box-shadow: 0px 0px 12px 1px rgba(87, 87, 87, 0.2);
+    }
+}
+@media print {
+    #out-container {
+        width: 100%;
+    }
+}
+
+#title {
+    text-align: center;
+    font-weight: 700;
+    margin: 0 0 30px 0;
+}
+
+.subtitle {
+    border-top: 1px solid rgba(87, 87, 87, 0.2);
+    margin: 50px 0 25px 0;
+    padding: 50px 0 0 0;
+}
+
+.sub-subtitle {
+    margin: 50px 0 25px 0;
+}
+
+.styled-table {
+    border-collapse: collapse;
+    margin: 20px auto 30px auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    text-align: center;
+}
+
+.styled-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+}
+
+.styled-table th, .styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+.figure-title, .table-title {
+    margin: 30px 0 20px 0;
+    text-align: center;
+}
+
+.div-box {
+    display: inline-block; 
+    width: 100%;
+}
+
+.div-left {
+    width: 48%;
+    float: left;
+}
+
+.div-right {
+    width: 48%;
+    float: right;
+}

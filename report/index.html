@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>서울 청년 주택 분석하기</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="out-container">
+        
+        <h2 id="title">서울 청년 주택 분석하기</h2>
+
+        <div id="icon">
+            <a href="https://github.com/acejune/youth-housing-analysis" target="_blank">
+                <i class="fab fa-github"></i> Github
+            </a>
+        </div>
+
+        <section>
+            <h4 class="subtitle">1 분석 배경</h4>
+            <p>
+                ㅤ서울시에서는 청년들을 위한 다양한 주거 복지 사업<sup><a href="https://housing.seoul.go.kr/site/main/home" target="_blank">[1]</a></sup>이 시행되고 있습니다.
+                <ul>
+                    <li><a href="https://housing.seoul.go.kr/site/main/content/sh01_060513" target="_blank">청년 월세 지원</a></li>
+                    <li><a href="https://housing.seoul.go.kr/site/main/content/sh01_040901" target="_blank">청년 임차보증금 이자 지원</a></li>
+                    <li><a href="https://housing.seoul.go.kr/site/main/content/sh01_060508" target="_blank">역세권 청년 주택</a></li>
+                    <li><a href="https://housing.seoul.go.kr/site/main/content/sh01_060506" target="_blank">청년 전세 임대 주택</a></li>
+                    <li><a href="https://housing.seoul.go.kr/site/main/content/sh01_060509" target="_blank">희망 하우징</a></li>
+                    <li><a href="https://housing.seoul.go.kr/site/main/content/sh01_060509" target="_blank">행복 주택</a></li>
+                    <li><a href="https://housing.seoul.go.kr/site/main/content/sh01_060509" target="_blank">행복 기숙사</a></li>
+                    <li>...</li>
+                </ul>
+            </p>
+            <p>
+                ㅤ서울시에서 지원하는 주거 복지 서비스의 대부분은 주거지를 저렴하게 제공하는 형태입니다.
+                이에 따라, 청년 주택 입지 분석을 수행해보겠습니다.
+            </p>
+        </section>
+
+        <section>
+            <h4 class="subtitle">2 서울시가 제공하는 주택 현황</h4>
+        </section>
+
+        <section>
+            <h4 class="subtitle">3 주택 수요 분석</h4>
+
+            <h5 class="sub-subtitle">3.1 청년들이 가장 많이 머무르는 자치구와 행정동</h5>
+            <p>
+                ㅤ<a href="https://data.seoul.go.kr/dataVisual/seoul/seoulLivingPopulation.do" target="_blank">서울 생활인구</a> 데이터를 이용하여, 청년들이 가장 많이 머무르는 자치구와 행정동을 알아보겠습니다.
+            </p>
+
+            <div class="div-box">
+                <div class="div-left">
+                    <h6 class="table-title">[표 1] 생활인구 수(합) 기준, 자치구 TOP 5</h6>
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>자치구</th>
+                                <th>생활인구 (합)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>서울 강남구</td>
+                                <td>143143665</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>서울 송파구</td>
+                                <td>112547445</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>서울 관악구</td>
+                                <td>109878727</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>서울 마포구</td>
+                                <td>95460174</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>서울 강서구</td>
+                                <td>90011205</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="div-right">
+                    <h6 class="table-title">[표 2] 생활인구 수(합) 기준, 행정동 TOP 5</h6>
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>행정동</th>
+                                <th>생활인구 (합)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>서울 강남구 역삼1동</td>
+                                <td>29584481</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>서울 마포구 서교동</td>
+                                <td>24794754</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>서울 서대문구 신촌동</td>
+                                <td>18972152</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>서울 영등포구 여의동</td>
+                                <td>18183053</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>서울 금천구 가산동</td>
+                                <td>15519677</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h6 class="figure-title">[그림 1] 행정동별 생활인구 수(합)</h6>
+            <iframe src="./vis_html/행정동별_생활인구_수_합.html"></iframe>
+
+        </section>
+
+        <section>
+            <h4 class="subtitle">4 Reference</h4>
+            <ol>
+                <li><a href="https://housing.seoul.go.kr/site/main/home" target="_blank">서울 주거 포털</a></li>
+            </ol>
+        </section>
+
+    </div>
+</body>
+</html>
+

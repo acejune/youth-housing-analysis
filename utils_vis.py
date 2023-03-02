@@ -79,6 +79,7 @@ def visualize_by_dong(df, columns, aliases_columns, legend_name):
                       columns=columns,
                       key_on='feature.properties.adm_cd8',
                       fill_color='YlOrRd',
+                      bins=253,
                       fill_opacity=0.6,
                       nan_fill_color='white',
                       nan_fill_opacity=0.6,
@@ -88,7 +89,7 @@ def visualize_by_dong(df, columns, aliases_columns, legend_name):
     columns[0] = 'dong_name'
     folium.features.GeoJson(data=df,
                             smooth_factor=2,
-                            style_function=lambda x: {'color':'black','fillColor':'transparent','weight':0.5},
+                            style_function=lambda x: {'color':'black', 'fillColor':'transparent', 'weight':0.5},
                             tooltip=folium.features.GeoJsonTooltip(
                                 fields=columns,
                                 aliases=aliases_columns,
@@ -102,7 +103,7 @@ def visualize_by_dong(df, columns, aliases_columns, legend_name):
                                     box-shadow: 3px;
                                     """,
                                 max_width=800,),
-                            highlight_function=lambda x: {'weight':3,'fillColor':'grey'},
+                            highlight_function=lambda x: {'weight':3, 'fillColor':'grey'},
                             ).add_to(seoul_map)
 
     save_folium_image(folium_map=seoul_map,
