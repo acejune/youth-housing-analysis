@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
 import utils
 
 
@@ -191,15 +192,80 @@ def collect_dong_boundary():
     LOGGER.info(f'데이터 수집 완료 - 행정동 경계 데이터 (ver. {version})')
 
 
-if __name__ == '__main__':
-    # 생활인구 데이터
-    collect_living_population_dong()
+def collect_youth_housing_in_station_area():
+    """역세권 청년주택 데이터 수집하기
+    """
+    base_url = 'https://soco.seoul.go.kr/youth/main/main.do'
 
-    # 생활이동 데이터
-    collect_living_migration_dong()
+    browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()),
+                               options=webdriver.ChromeOptions())
+    browser.get(base_url)
+    raw_html_list = browser.find_elements(By.CLASS_NAME, 'slick-slide')
+
+    house_id_list = []
+    ptr = re.compile(r'homeView\(([\d]+)\)')
+    for raw_html in raw_html_list:
+        try:
+            html_str = raw_html.get_attribute('innerHTML')
+            house_id = ptr.search(html_str)
+            house_id = house_id.group(1)
+            house_id_list.append(house_id)
+        except Exception:
+            continue
+    browser.close()
+
+    house_list = []
+    for house_id in house_id_list:
+        url = 'https://soco.seoul.go.kr/youth/pgm/home/yohome/view.do'
+        data = {'menuNo': '400002',
+                'homeCode': house_id}
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        response = rq.post(url, data=data, headers=headers)
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
+        dashline_list = soup.find_all(class_='dashline')
+
+        house_info = []
+        for dashline in dashline_list:
+            house_info.extend(dashline.find_all('p'))
+
+        ptr = re.compile(r'(<.*?>|\s{2,})')
+        for index, info in enumerate(house_info):
+            info = re.sub(ptr, '', str(info))
+            house_info[index] = info
+
+        house_info = ' /// '.join(house_info)
+        ptr_address = re.compile(r'주소 : ([가-힣\s\d]+)')
+        ptr_ho = re.compile(r'총 ([가-힣\s\d]+호)')
+        ptr_sil = re.compile(r'총 ([가-힣\s\d]+실)')
+
+        address = ptr_address.search(house_info)
+        address = address.group(1).strip()
+        address = address.replace('서울특별시', '서울')
+        ho = ptr_ho.search(house_info)
+        ho = ho.group(1).strip()
+        sil = ptr_sil.search(house_info)
+        sil = sil.group(1).strip()
+        house_list.append((address, ho, sil))
+    df = pd.DataFrame(house_list, columns =['address', 'ho', 'sil'])
+
+    save_path = utils.check_path('청년주택', '역세권_청년주택_raw.csv')
+    utils.save_data(save_path, df, encoding='cp949')
+    LOGGER.info('데이터 수집 완료 - 역세권 청년주택 데이터')
+
+
+if __name__ == '__main__':
+    # # 생활인구 데이터
+    # collect_living_population_dong()
+
+    # # 생활이동 데이터
+    # collect_living_migration_dong()
 
     # # 최신 행정동 코드 데이터
     # collect_latest_dong_code()
 
     # # 행정동 경계 데이터
     # collect_dong_boundary()
+
+    # 역세권 청년 주택 데이터
+    collect_youth_housing_in_station_area()
